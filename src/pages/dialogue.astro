@@ -70,14 +70,14 @@
     <div class="section-label">Node Graph Structure</div>
     <h2>Conversations as data, not logic</h2>
     <p>Each NPC's dialogue is defined in a module script as a flat table of named nodes. Every node has a <strong>text</strong> field and a <strong>responses</strong> array. Each response has an <code>id</code>, display <code>text</code>, and a <code>next</code> field pointing to the next node name — or <code>nil</code> to end the conversation.</p>
-<pre><code>Nodes = {
-    [<span class="st">"Start"</span>] = {
+<pre><code>Nodes = &#123;
+    [<span class="st">"Start"</span>] = &#123;
         text = <span class="st">"Hey there, stranger. What's your deal?"</span>,
-        responses = {
-            { id = <span class="st">"AskWho"</span>, text = <span class="st">"Who are YOU?"</span>,        next = <span class="st">"Who_Are_You"</span> },
-            { id = <span class="st">"Intro"</span>,  text = <span class="st">"I'm {playerName}."</span>,    next = <span class="st">"Player_Intro"</span> },
-            { id = <span class="st">"End"</span>,    text = <span class="st">"Uh... bye."</span>,          next = <span class="nm">nil</span> }
-        }
+        responses = &#123;
+            &#123; id = <span class="st">"AskWho"</span>, text = <span class="st">"Who are YOU?"</span>,        next = <span class="st">"Who_Are_You"</span> &#125;,
+            &#123; id = <span class="st">"Intro"</span>,  text = <span class="st">"I'm &#123;playerName&#125;."</span>,    next = <span class="st">"Player_Intro"</span> &#125;,
+            &#123; id = <span class="st">"End"</span>,    text = <span class="st">"Uh... bye."</span>,          next = <span class="nm">nil</span> &#125;
+        &#125;
     },
 }</code></pre>
     <p>The server caches all dialogue modules on startup. When a player interacts with an NPC, the server looks up the module by name, sends the Start node to the client, and from that point the client drives the UI while the server advances the graph on each response.</p>
@@ -85,7 +85,7 @@
   <div class="section">
     <div class="section-label">Dynamic Text</div>
     <h2>Player name injection at display time</h2>
-    <p>Dialogue text can contain template tags like <code>{playerName}</code> or <code>{displayName}</code>. Before rendering any text the client runs it through a replacement function, swapping tags for the local player's actual values. This means NPC dialogue can feel personal without storing any player-specific data in the modules.</p>
+    <p>Dialogue text can contain template tags like <code>&#123;playerName&#125;</code> or <code>&#123;displayName&#125;</code>. Before rendering any text the client runs it through a replacement function, swapping tags for the local player's actual values. This means NPC dialogue can feel personal without storing any player-specific data in the modules.</p>
   </div>
   <div class="section">
     <div class="section-label">Reusability</div>
