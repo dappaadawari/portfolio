@@ -1,10 +1,7 @@
----
----
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dialogue System — Adawari Dappa</title>
+<title>Movement System — Adawari Dappa</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <style>
   :root{--bg:#0a0a0a;--bg2:#111111;--bg3:#181818;--border:#222222;--accent:#c8f060;--text:#e8e8e8;--muted:#666;--muted2:#444;}
@@ -49,9 +46,9 @@
 <div class="grid-dec"></div>
 <nav><a href="/" class="nav-logo">AD<span>.</span></a><a href="/" class="nav-back">← Back to Portfolio</a></nav>
 <div class="hero">
-  <div class="case-type">Dialogue · UI · Reusable Systems</div>
-  <h1>Dialogue System — Node-Based Branching NPC Conversations</h1>
-  <p class="hero-desc">A reusable branching dialogue system driven by node graphs. Any NPC can use it by swapping a module. Supports dynamic text injection, scrollable response buttons, and clean server/client separation.</p>
+  <div class="case-type">Movement · Physics · Server-Authoritative</div>
+  <h1>Movement System — Sprint, Dash, Double Jump & Sliding</h1>
+  <p class="hero-desc">Server-authoritative movement with sprint, directional dashing, double jump via LinearVelocity, and slope-aware sliding using AlignOrientation. Input tracked persistently to handle keyboard hardware ghosting.</p>
   <div class="meta-row">
     <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
     <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
@@ -62,38 +59,41 @@
 <div class="content">
   <div class="section">
     <div class="section-label">The Problem</div>
-    <h2>Dialogue systems shouldn't be hardcoded per NPC</h2>
-    <p>A common mistake is building dialogue directly into each NPC's script — unique UI handling, unique response logic, unique branching. This doesn't scale. The goal was a single system that any NPC in the game could use just by pointing at a data module.</p>
-    <div class="callout"><strong>Design goal:</strong> Adding a new NPC with full branching dialogue should require writing only a data module — zero changes to the dialogue system itself.</div>
+    <h2>Movement that feels good and stays server-authoritative</h2>
+    <p>Roblox's default character controller is limited — no sprinting, no dashing, no sliding. The goal was a full movement suite where all speed modifications and physics forces are applied server-side, while animations and input remain on the client for responsiveness.</p>
+    <div class="callout"><strong>Key challenge:</strong> Using modern physics constraints (LinearVelocity, AlignOrientation) instead of deprecated BodyVelocity/BodyGyro, and making sliding feel physically realistic on slopes.</div>
   </div>
   <div class="section">
-    <div class="section-label">Node Graph Structure</div>
-    <h2>Conversations as data, not logic</h2>
-    <p>Each NPC's dialogue is defined in a module script as a flat table of named nodes. Every node has a <strong>text</strong> field and a <strong>responses</strong> array. Each response has an <code>id</code>, display <code>text</code>, and a <code>next</code> field pointing to the next node name — or <code>nil</code> to end the conversation.</p>
-<pre><code>Nodes = &#123;
-    [<span class="st">"Start"</span>] = &#123;
-        text = <span class="st">"Hey there, stranger. What's your deal?"</span>,
-        responses = &#123;
-            &#123; id = <span class="st">"AskWho"</span>, text = <span class="st">"Who are YOU?"</span>,        next = <span class="st">"Who_Are_You"</span> &#125;,
-            &#123; id = <span class="st">"Intro"</span>,  text = <span class="st">"I'm &#123;playerName&#125;."</span>,    next = <span class="st">"Player_Intro"</span> &#125;,
-            &#123; id = <span class="st">"End"</span>,    text = <span class="st">"Uh... bye."</span>,          next = <span class="nm">nil</span> &#125;
-        &#125;
-    },
-}</code></pre>
-    <p>The server caches all dialogue modules on startup. When a player interacts with an NPC, the server looks up the module by name, sends the Start node to the client, and from that point the client drives the UI while the server advances the graph on each response.</p>
+    <div class="section-label">Dashing</div>
+    <h2>Directional dashing with diagonal support</h2>
+    <p>The client reads held WASD keys persistently via InputBegan/InputEnded (not polling, to avoid hardware key ghosting where simultaneous keypresses drop signals). When Q is pressed, the held keys are sent to the server as a string like "WA" or "WD".</p>
+    <p>The server computes the dash direction from the character's CFrame — each key in the combo contributes its axis, so diagonals work naturally. The direction string is validated (1–4 chars, only WASD) before any physics are applied. A <strong>LinearVelocity</strong> constraint is added to the HumanoidRootPart for the dash duration then destroyed.</p>
+<pre><code><span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"W"</span>) <span class="kw">then</span> direction += lookVector  <span class="kw">end</span>
+<span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"S"</span>) <span class="kw">then</span> direction -= lookVector  <span class="kw">end</span>
+<span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"D"</span>) <span class="kw">then</span> direction += rightVector <span class="kw">end</span>
+<span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"A"</span>) <span class="kw">then</span> direction -= rightVector <span class="kw">end</span></code></pre>
   </div>
   <div class="section">
-    <div class="section-label">Dynamic Text</div>
-    <h2>Player name injection at display time</h2>
-    <p>Dialogue text can contain template tags like <code>&#123;playerName&#125;</code> or <code>&#123;displayName&#125;</code>. Before rendering any text the client runs it through a replacement function, swapping tags for the local player's actual values. This means NPC dialogue can feel personal without storing any player-specific data in the modules.</p>
+    <div class="section-label">Slope-Aware Sliding</div>
+    <h2>Physics-driven sliding that responds to terrain</h2>
+    <p>Sliding uses a <strong>LinearVelocity</strong> for forward momentum and an <strong>AlignOrientation</strong> to tilt the character to match the surface normal — so they lean into slopes visually. A raycast fires downward every Heartbeat; if no ground is detected the slide stops automatically.</p>
+    <p>A speed multiplier starts at 1.0 and changes based on vertical position delta each frame — accelerating downhill, decelerating on flat ground, decelerating faster going uphill. When the multiplier drops below 0.1 the slide ends naturally.</p>
+<pre><code><span class="kw">if</span> verticalChange < <span class="nm">0.1</span> <span class="kw">and</span> verticalChange > <span class="nm">-0.1</span> <span class="kw">then</span>
+    currentMultiplier = <span class="fn">math.clamp</span>(
+        currentMultiplier - slideSettings.SpeedChangeRate.Forward * dt,
+        <span class="nm">0</span>, slideSettings.MaxMultiplier)
+<span class="kw">elseif</span> verticalChange < <span class="nm">0</span> <span class="kw">then</span> <span class="cm">-- going downhill, add speed</span>
+    currentMultiplier = <span class="fn">math.clamp</span>(
+        currentMultiplier + slideSettings.SpeedChangeRate.Downward * dt,
+        <span class="nm">0</span>, slideSettings.MaxMultiplier)
+<span class="kw">end</span></code></pre>
   </div>
   <div class="section">
-    <div class="section-label">Reusability</div>
-    <h2>Adding a new NPC takes minutes</h2>
-    <p>To add a new NPC to the game you create one module script following the node structure, name it <code>NPCName_Dialogue</code>, and place it as a child of the DialogueController. No other code needs to change. The system discovers and caches all dialogue modules automatically on startup.</p>
-    <p>The same UI, the same server logic, and the same RemoteEvent handle every NPC in the game. This was the most important architectural decision — keeping data and behavior fully separate.</p>
+    <div class="section-label">Double Jump</div>
+    <h2>Mid-air jump using LinearVelocity</h2>
+    <p>Double jump fires a brief <strong>LinearVelocity</strong> along the Y axis for 0.12 seconds, then destroys itself. It's gated behind a <strong>FloorMaterial == Air</strong> check and a per-character cooldown attribute. Using LinearVelocity instead of manipulating AssemblyLinearVelocity directly gives a cleaner, more controllable impulse without fighting Roblox's physics solver.</p>
     <div class="tag-list">
-      <span class="tag">Lua</span><span class="tag">Node Graph</span><span class="tag">Module Pattern</span><span class="tag">UI Design</span><span class="tag">Dynamic Text</span><span class="tag">Reusable</span><span class="tag">RemoteEvents</span>
+      <span class="tag">Lua</span><span class="tag">LinearVelocity</span><span class="tag">AlignOrientation</span><span class="tag">Raycasting</span><span class="tag">Physics Constraints</span><span class="tag">Server-Authoritative</span>
     </div>
   </div>
   <div class="next-cases">
@@ -102,7 +102,7 @@
       <a href="/combat" class="next-card"><div><div class="next-card-title">Combat System</div><div class="next-card-sub">Hitboxes, state machine & anti-cheat</div></div><div class="next-arrow">↗</div></a>
       <a href="/inventory" class="next-card"><div><div class="next-card-title">Inventory & Datastore</div><div class="next-card-sub">Session locking, data safety, world items</div></div><div class="next-arrow">↗</div></a>
       <a href="/weather" class="next-card"><div><div class="next-card-title">Weather & Time-of-Day</div><div class="next-card-sub">Dynamic world state, precipitation, temperature</div></div><div class="next-arrow">↗</div></a>
-      <a href="/movement" class="next-card"><div><div class="next-card-title">Movement System</div><div class="next-card-sub">Sprint, dash, double jump, slope sliding</div></div><div class="next-arrow">↗</div></a>
+      <a href="/dialogue" class="next-card"><div><div class="next-card-title">Dialogue System</div><div class="next-card-sub">Node-based branching NPC conversations</div></div><div class="next-arrow">↗</div></a>
     </div>
   </div>
 </div>
