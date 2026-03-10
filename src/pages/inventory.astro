@@ -1,0 +1,129 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inventory & Datastore System — Adawari Dappa</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg:#0a0a0a;--bg2:#111111;--bg3:#181818;--border:#222222;--accent:#c8f060;--accent2:#60a0f0;--text:#e8e8e8;--muted:#666;--muted2:#444; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.92);backdrop-filter:blur(12px);}
+  .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.02em;}
+  .nav-logo span{color:var(--accent);}
+  .nav-back{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color 0.2s;}
+  .nav-back:hover{color:var(--text);}
+  .grid-decoration{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;}
+  .hero{padding:140px 48px 80px;max-width:900px;margin:0 auto;}
+  .breadcrumb{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:0.08em;margin-bottom:24px;display:flex;align-items:center;gap:8px;}
+  .breadcrumb a{color:var(--muted);text-decoration:none;} .breadcrumb a:hover{color:var(--accent);} .breadcrumb span{color:var(--muted2);}
+  .case-type{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);background:rgba(96,160,240,0.08);padding:5px 12px;border-radius:2px;margin-bottom:20px;}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:24px;}
+  .hero-desc{font-size:18px;color:#999;line-height:1.7;max-width:680px;margin-bottom:40px;}
+  .meta-row{display:flex;gap:40px;flex-wrap:wrap;padding:24px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .meta-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .meta-value{font-size:14px;color:var(--text);font-weight:500;}
+  .content{max-width:900px;margin:0 auto;padding:0 48px 120px;}
+  .section{margin-top:72px;}
+  .section-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-bottom:20px;color:var(--text);}
+  p{color:#999;font-size:16px;line-height:1.8;margin-bottom:16px;}
+  p strong{color:var(--text);font-weight:500;}
+  .callout{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:20px 24px;margin:28px 0;font-size:15px;color:#aaa;line-height:1.7;}
+  .callout strong{color:var(--text);}
+  pre{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:28px;overflow-x:auto;margin:28px 0;position:relative;}
+  code{font-family:'DM Mono',monospace;font-size:13px;line-height:1.7;color:#ccc;}
+  .keyword{color:#c8f060;} .fn{color:#60a0f0;} .str{color:#f0a060;} .comment{color:#555;font-style:italic;} .num{color:#a0d0ff;}
+  .tag-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .tag{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);padding:6px 14px;border-radius:2px;}
+  .next-cases{margin-top:100px;padding-top:48px;border-top:1px solid var(--border);}
+  .next-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px;}
+  .next-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .next-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:24px;text-decoration:none;color:inherit;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
+  .next-card:hover{border-color:#333;background:var(--bg3);}
+  .next-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;}
+  .next-card-sub{font-size:13px;color:var(--muted);}
+  .next-arrow{color:var(--muted2);font-size:18px;transition:all 0.2s;}
+  .next-card:hover .next-arrow{color:var(--accent);transform:translate(3px,-3px);}
+  @media(max-width:768px){nav{padding:16px 24px;}.hero{padding:120px 24px 60px;}.content{padding:0 24px 80px;}.next-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="grid-decoration"></div>
+<nav>
+  <a href="/" class="nav-logo">AD<span>.</span></a>
+  <a href="/" class="nav-back">← Back to Portfolio</a>
+</nav>
+<div class="hero">
+  <div class="breadcrumb"><a href="/">Portfolio</a><span>/</span><span>Inventory & Datastore System</span></div>
+  <div class="case-type">Datastore · Inventory · Persistence</div>
+  <h1>Inventory & Datastore System — Session Locking & Data Safety</h1>
+  <p class="hero-desc">Persistent player data with session locking, versioned saves, backup keys, and autosave. A fully reactive inventory UI with stackable items, weight limits, and server-validated world item pickups.</p>
+  <div class="meta-row">
+    <div class="meta-item"><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div class="meta-item"><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
+    <div class="meta-item"><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
+    <div class="meta-item"><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
+  </div>
+</div>
+<div class="content">
+  <div class="section">
+    <div class="section-label">The Problem</div>
+    <h2>Player data is the most fragile part of any game</h2>
+    <p>DataStore failures, server crashes, and players joining from multiple servers simultaneously can all corrupt or overwrite player data. Most beginner implementations just call <strong>SetAsync on PlayerRemoving</strong> and hope for the best — no locking, no retries, no backups.</p>
+    <p>The goal was to build a data layer that could survive edge cases: a player rejoining immediately after a crash, a DataStore outage mid-session, or two servers racing to save the same player's data.</p>
+    <div class="callout"><strong>Core constraint:</strong> Data must never be lost or duplicated, even if the server shuts down unexpectedly, the DataStore is temporarily unavailable, or a player joins two servers at once.</div>
+  </div>
+  <div class="section">
+    <div class="section-label">Session Locking</div>
+    <h2>Preventing multi-server data conflicts</h2>
+    <p>When a player joins, <strong>DataManager</strong> acquires a session lock using <code>UpdateAsync</code> on a separate lock store. The lock stores the server's JobId and a timestamp. If another server already holds a fresh lock for that player, the joining player is kicked with a message to rejoin shortly.</p>
+    <p>Locks older than <strong>300 seconds</strong> are treated as stale (e.g. from a crashed server) and overwritten automatically. On PlayerRemoving, the lock is released before the session data is wiped.</p>
+<pre><code><span class="keyword">return</span> lockStore:<span class="fn">UpdateAsync</span>(<span class="str">"Lock_"</span> .. userId, <span class="keyword">function</span>(existing)
+    <span class="keyword">if</span> existing == <span class="keyword">nil</span> <span class="keyword">then</span> <span class="keyword">return</span> { jobId = jobId, timestamp = now } <span class="keyword">end</span>
+    <span class="keyword">if</span> existing.jobId == jobId <span class="keyword">then</span> <span class="keyword">return</span> { jobId = jobId, timestamp = now } <span class="keyword">end</span>
+    <span class="keyword">if</span> (now - (existing.timestamp <span class="keyword">or</span> <span class="num">0</span>)) > LOCK_EXPIRY <span class="keyword">then</span>
+        <span class="keyword">return</span> { jobId = jobId, timestamp = now } <span class="comment">-- stale, overwrite</span>
+    <span class="keyword">end</span>
+    <span class="keyword">return nil</span> <span class="comment">-- active lock on another server, abort</span>
+<span class="keyword">end</span>)</code></pre>
+  </div>
+  <div class="section">
+    <div class="section-label">Data Safety</div>
+    <h2>Backups, retries, and versioning</h2>
+    <p>Every save writes a backup of the <em>previous</em> save to a separate backup DataStore before overwriting the main key. This means a failed save never destroys the last good state — the backup always reflects the last confirmed write.</p>
+    <p>All DataStore calls are wrapped in a retry loop — up to <strong>3 attempts with 2-second delays</strong>. If all retries fail on load, the player is kicked rather than allowed to play on empty data. On save failure, a warning is logged but the session continues.</p>
+    <p>Save data carries a <strong>version number</strong>. When a player loads, if their saved version is older than the current schema, a migration chain runs — each step upgrading one version at a time — before the data is validated and populated into the session.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">Inventory Design</div>
+    <h2>Stackable items, weight, and world drops</h2>
+    <p>The inventory supports both stackable and non-stackable items. Adding a stackable item searches for an existing slot with room before creating a new one. Each item has a <strong>weight</strong> value — the player's total carried weight is tracked and capped, with weight attributes synced to the character for the client to read reactively.</p>
+    <p>When a player drops an item, <strong>WorldItemManager</strong> spawns a plain Model in the workspace (not a Tool, to avoid Roblox's auto-pickup) with a ClickDetector. On click, the server does a radius check — if the player is within 10 studs, the item is claimed atomically (removed from tracking before AddItem is called) to prevent two players picking it up in the same frame.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">Client UI</div>
+    <h2>Reactive inventory with race condition guards</h2>
+    <p>The inventory client fetches a snapshot of the player's inventory on load via RemoteFunction, then listens for <code>AddItem</code> and <code>RemoveItem</code> RemoteEvents. Events that arrive before the initial snapshot finishes loading are queued and replayed in order once setup is complete — preventing duplicate nodes or missed updates during the load window.</p>
+    <p>Each inventory node has a duplicate guard: if a node for a given UID already exists, it updates the amount label rather than spawning a second GuiObject. Hover tooltips show item name, description, and rarity, and are cleaned up immediately when the last item is removed.</p>
+    <div class="tag-list">
+      <span class="tag">Lua</span><span class="tag">DataStoreService</span><span class="tag">Session Locking</span><span class="tag">Version Migration</span><span class="tag">Inventory UI</span><span class="tag">World Items</span><span class="tag">OOP</span>
+    </div>
+  </div>
+  <div class="next-cases">
+    <div class="next-label">More Case Studies</div>
+    <div class="next-grid">
+      <a href="/combat" class="next-card"><div><div class="next-card-title">Combat System</div><div class="next-card-sub">Hitboxes, state machine & anti-cheat</div></div><div class="next-arrow">↗</div></a>
+      <a href="/weather" class="next-card"><div><div class="next-card-title">Weather & Time-of-Day</div><div class="next-card-sub">Dynamic world state, temperature, precipitation</div></div><div class="next-arrow">↗</div></a>
+      <a href="/movement" class="next-card"><div><div class="next-card-title">Movement System</div><div class="next-card-sub">Sprint, dash, double jump, slope sliding</div></div><div class="next-arrow">↗</div></a>
+      <a href="/dialogue" class="next-card"><div><div class="next-card-title">Dialogue System</div><div class="next-card-sub">Node-based branching NPC conversations</div></div><div class="next-arrow">↗</div></a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

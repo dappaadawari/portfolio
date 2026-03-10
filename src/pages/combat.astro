@@ -1,0 +1,627 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Combat System — Adawari Dappa</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --border: #222222;
+    --accent: #c8f060;
+    --accent2: #60a0f0;
+    --text: #e8e8e8;
+    --muted: #666;
+    --muted2: #444;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-back {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--text); }
+
+  .grid-decoration {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero {
+    padding: 140px 48px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .breadcrumb {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breadcrumb a { color: var(--muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb span { color: var(--muted2); }
+
+  .case-type {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(200,240,96,0.08);
+    padding: 5px 12px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+
+  .hero-desc {
+    font-size: 18px;
+    color: #999;
+    line-height: 1.7;
+    max-width: 680px;
+    margin-bottom: 40px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .meta-item {}
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .meta-value {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 48px 120px;
+  }
+
+  .section {
+    margin-top: 72px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  p {
+    color: #999;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  p strong { color: var(--text); font-weight: 500; }
+
+  .callout {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 28px 0;
+    font-size: 15px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+  .callout strong { color: var(--text); }
+
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px;
+    overflow-x: auto;
+    margin: 28px 0;
+    position: relative;
+  }
+
+  .code-label {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #ccc;
+  }
+
+  .keyword { color: #c8f060; }
+  .fn { color: #60a0f0; }
+  .str { color: #f0a060; }
+  .comment { color: #555; font-style: italic; }
+  .num { color: #a0d0ff; }
+
+  .diagram {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 32px;
+    margin: 28px 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0;
+    align-items: center;
+    text-align: center;
+  }
+
+  .diag-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 12px;
+  }
+  .diag-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .diag-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .diag-arrow {
+    font-size: 20px;
+    color: var(--accent);
+    padding: 0 8px;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 2px;
+  }
+
+  .next-cases {
+    margin-top: 100px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+  .next-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .next-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .next-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .next-card:hover { border-color: #333; background: var(--bg3); }
+  .next-card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .next-card-sub {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .next-arrow { color: var(--muted2); font-size: 18px; transition: all 0.2s; }
+  .next-card:hover .next-arrow { color: var(--accent); transform: translate(3px, -3px); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .hero { padding: 120px 24px 60px; }
+    .content { padding: 0 24px 80px; }
+    .diagram { grid-template-columns: 1fr; gap: 12px; }
+    .diag-arrow { transform: rotate(90deg); }
+    .next-grid { grid-template-columns: 1fr; }
+    .meta-row { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-decoration"></div>
+
+<nav>
+  <a href="/" class="nav-logo">AD<span>.</span></a>
+  <a href="/" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<div class="hero">
+  <div class="breadcrumb">
+    <a href="/">Portfolio</a>
+    <span>/</span>
+    <span>Combat System</span>
+  </div>
+  <div class="case-type">Server · Client · Game Systems</div>
+  <h1>Combat System — Hitboxes, State Machine & Anti-Cheat</h1>
+  <p class="hero-desc">
+    A fully server-authoritative M1 combo system with critical attacks, blocking, parrying, 
+    and endlag. The client handles animation and input only — all damage, validation, 
+    and state lives on the server.
+  </p>
+  <div class="meta-row">
+    <div class="meta-item">
+      <div class="meta-label">Timeline</div>
+      <div class="meta-value">2024 — Ongoing</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Language</div>
+      <div class="meta-value">Lua / Luau</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Platform</div>
+      <div class="meta-value">Roblox Studio</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Type</div>
+      <div class="meta-value">Personal Project</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- PROBLEM -->
+  <div class="section">
+    <div class="section-label">The Problem</div>
+    <h2>Client-side combat is exploitable by design</h2>
+    <p>
+      In most beginner Roblox games, combat is handled entirely on the client — the player's 
+      machine decides when a hit lands, how much damage is dealt, and whether the attack was 
+      valid. This is easy to exploit. Any player can fire a remote event with fake hit data 
+      and deal unlimited damage.
+    </p>
+    <p>
+      The challenge was building a combat system where <strong>the client never has authority 
+      over damage or state</strong> — it only drives visuals and input — while still feeling 
+      responsive and snappy to play.
+    </p>
+    <div class="callout">
+      <strong>Core constraint:</strong> The server must validate every hit, manage every state 
+      transition, and be the single source of truth — but the player must never feel lag or 
+      desync between what they see and what the server knows.
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="section">
+    <div class="section-label">Architecture</div>
+    <h2>Clean client/server split</h2>
+    <p>
+      The system is split across six modules with clearly defined responsibilities. 
+      No module crosses its boundary — the client never touches damage, 
+      the server never touches animation.
+    </p>
+
+    <div class="diagram">
+      <div class="diag-box">
+        <div class="diag-title">InputHandler</div>
+        <div class="diag-sub">Reads keys<br/>Plays animations<br/>Fires RemoteEvent</div>
+      </div>
+      <div class="diag-arrow">→</div>
+      <div class="diag-box">
+        <div class="diag-title">CombatServer</div>
+        <div class="diag-sub">Validates hits<br/>Applies damage<br/>Manages combo state</div>
+      </div>
+      <div class="diag-arrow">→</div>
+      <div class="diag-box">
+        <div class="diag-title">StateController</div>
+        <div class="diag-sub">Tracks Attacking<br/>Blocking, Parrying<br/>Endlag, Critical</div>
+      </div>
+    </div>
+
+    <p>
+      <strong>InputHandler</strong> (client) reads player input, plays the animation immediately 
+      for responsiveness, then waits for the hit timestamp before casting the hitbox and 
+      firing to the server. This means the server receives the event at the exact frame 
+      the hit would land — not before.
+    </p>
+    <p>
+      <strong>CombatServer</strong> receives the event, runs distance validation on every 
+      reported humanoid, checks the player's current state (can't attack while blocking, 
+      in endlag, etc.), applies damage, and fires a StateUpdate back to all relevant clients.
+    </p>
+    <p>
+      <strong>StateController</strong> is a lightweight key-value store per entity. States 
+      like <strong>Attacking</strong>, <strong>Endlag</strong>, and <strong>Parrying</strong> 
+      can be set with optional auto-expiry durations so they clean themselves up automatically.
+    </p>
+  </div>
+
+  <!-- KEY DECISIONS -->
+  <div class="section">
+    <div class="section-label">Key Decisions</div>
+    <h2>Why deferred hitbox casting?</h2>
+    <p>
+      A naive implementation fires the hitbox the moment the player clicks. But animations 
+      have a wind-up — the sword hasn't reached the target yet. Casting immediately means 
+      hits register before the visual swing, which feels wrong and is easy to abuse.
+    </p>
+    <p>
+      Each hit in the style data carries a <strong>hitTimestamp</strong> — the number of 
+      seconds after the click when the hit frame fires. The client defers the hitbox cast 
+      using <code>task.delay(hitTimestamp)</code>, so the spatial query runs at the exact 
+      moment the animation connects visually.
+    </p>
+
+    <pre><code><span class="comment">-- Defer hitbox cast + server fire to the actual hit frame</span>
+<span class="keyword">pendingHitboxTask</span> = task.delay(hitData.hitTimestamp <span class="keyword">or</span> <span class="num">0</span>, <span class="keyword">function</span>()
+    pendingHitboxTask = <span class="keyword">nil</span>
+    <span class="keyword">local</span> char = player.Character
+    <span class="keyword">local</span> hits = char
+        <span class="keyword">and</span> <span class="fn">HitboxModule.cast</span>(char, hitData.hitboxRadius, hitData.hitboxOffset, <span class="num">0.15</span>)
+        <span class="keyword">or</span> {}
+    combatRemote:<span class="fn">FireServer</span>({ type = <span class="str">"Combat"</span>, action = <span class="str">"M1"</span>, hits = hits })
+<span class="keyword">end</span>)</code></pre>
+
+    <h2>Server-side distance validation</h2>
+    <p>
+      Even though the client casts the hitbox, the server never trusts those results 
+      blindly. Every humanoid in the reported hit list is checked against the attacker's 
+      position server-side. If the distance exceeds <strong>MAX_HIT_DISTANCE (10 studs)</strong>, 
+      the hit is discarded — no damage, no feedback.
+    </p>
+
+    <pre><code><span class="keyword">local function</span> <span class="fn">validateHits</span>(attacker, hits)
+    <span class="keyword">local</span> confirmed = {}
+    <span class="keyword">for</span> _, humanoid <span class="keyword">in</span> <span class="fn">ipairs</span>(hits) <span class="keyword">do</span>
+        <span class="keyword">local</span> dist = (attackerHRP.Position - targetHRP.Position).Magnitude
+        <span class="keyword">if</span> dist <= MAX_HIT_DISTANCE <span class="keyword">then</span>
+            <span class="fn">table.insert</span>(confirmed, humanoid)
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="keyword">return</span> confirmed
+<span class="keyword">end</span></code></pre>
+
+    <h2>Blocking vs Parrying — timing matters</h2>
+    <p>
+      When a player holds the block key, they enter a <strong>Parrying</strong> state for 
+      150ms before transitioning to a sustained <strong>Blocking</strong> state. A hit that 
+      lands during the parry window deals zero damage and triggers a special parry animation. 
+      A hit during regular blocking deals 40% reduced damage. A token system cancels the 
+      parry-to-block transition if the player releases the key early.
+    </p>
+  </div>
+
+  <!-- RATE LIMITING -->
+  <div class="section">
+    <div class="section-label">Anti-Cheat</div>
+    <h2>Rate limiting all combat events</h2>
+    <p>
+      Every combat remote event passes through a <strong>RateLimiter</strong> before any 
+      logic runs. Each player gets a rolling window — max 30 actions per 5 seconds. 
+      Timestamps outside the window are pruned on each check. Players who exceed the 
+      limit are warned and their action is silently dropped.
+    </p>
+    <p>
+      This doesn't just catch speed hackers — it also prevents edge cases where 
+      client bugs could spam the server with repeated events.
+    </p>
+  </div>
+
+  <!-- STYLE DATA -->
+  <div class="section">
+    <div class="section-label">Design Pattern</div>
+    <h2>Style data as configuration, not logic</h2>
+    <p>
+      Each combat style (sword, fist, etc.) is defined as a pure data module — 
+      no logic, just configuration. Combo length, hit damage, hitbox sizes, animation names, 
+      and flourish functions are all declared in one place. The server loads the correct 
+      style for each player dynamically via <strong>PlayerData.GetStyleData()</strong>.
+    </p>
+    <p>
+      This means adding a new weapon style requires <strong>zero changes to the combat 
+      server</strong> — you just write a new data module and drop it in the right folder.
+    </p>
+
+    <pre><code><span class="comment">-- Base style data (data only, no logic)</span>
+hits = {
+    [<span class="num">1</span>] = { damage = <span class="num">7</span>,  animName = <span class="str">"Base_M1_1"</span>, hitboxRadius = <span class="num">2.5</span>, hitTimestamp = <span class="num">0.2</span> },
+    [<span class="num">2</span>] = { damage = <span class="num">7</span>,  animName = <span class="str">"Base_M1_2"</span>, hitboxRadius = <span class="num">2.5</span>, hitTimestamp = <span class="num">0.2</span> },
+    [<span class="num">3</span>] = { damage = <span class="num">7</span>,  animName = <span class="str">"Base_M1_3"</span>, hitboxRadius = <span class="num">2.5</span>, hitTimestamp = <span class="num">0.2</span> },
+    [<span class="num">4</span>] = { damage = <span class="num">10</span>, animName = <span class="str">"Base_M1_4"</span>, hitboxRadius = <span class="num">3</span>,   hitTimestamp = <span class="num">0.25</span>,
+            flourish = knockback },  <span class="comment">-- last hit triggers knockback</span>
+},</code></pre>
+  </div>
+
+  <!-- WHAT I LEARNED -->
+  <div class="section">
+    <div class="section-label">Reflection</div>
+    <h2>What I learned</h2>
+    <p>
+      Building this made the tradeoffs of client-server architecture very concrete. 
+      Every time I gave the client more authority, I introduced an exploit vector. 
+      Every time I moved logic to the server, I had to think carefully about latency 
+      and how to keep the experience feeling responsive.
+    </p>
+    <p>
+      The deferred hitbox pattern was the most important insight — <strong>responsiveness 
+      and server authority aren't mutually exclusive</strong> if you time your events 
+      correctly. The client plays the animation instantly; the server just receives 
+      the event a fraction of a second later at the right moment.
+    </p>
+    <div class="tag-list">
+      <span class="tag">Lua</span>
+      <span class="tag">Server-Authoritative</span>
+      <span class="tag">State Machine</span>
+      <span class="tag">Anti-Cheat</span>
+      <span class="tag">Hitbox System</span>
+      <span class="tag">Rate Limiting</span>
+      <span class="tag">OOP</span>
+      <span class="tag">RemoteEvents</span>
+    </div>
+  </div>
+
+  <!-- NEXT CASES -->
+  <div class="next-cases">
+    <div class="next-label">More Case Studies</div>
+    <div class="next-grid">
+      <a href="/inventory" class="next-card">
+        <div>
+          <div class="next-card-title">Inventory & Datastore System</div>
+          <div class="next-card-sub">Session locking, data safety, world items</div>
+        </div>
+        <div class="next-arrow">↗</div>
+      </a>
+      <a href="/weather" class="next-card">
+        <div>
+          <div class="next-card-title">Weather & Time-of-Day System</div>
+          <div class="next-card-sub">Dynamic world state, temperature, precipitation</div>
+        </div>
+        <div class="next-arrow">↗</div>
+      </a>
+      <a href="/movement" class="next-card">
+        <div>
+          <div class="next-card-title">Movement System</div>
+          <div class="next-card-sub">Sprint, dash, double jump, slope sliding</div>
+        </div>
+        <div class="next-arrow">↗</div>
+      </a>
+      <a href="/dialogue" class="next-card">
+        <div>
+          <div class="next-card-title">Dialogue System</div>
+          <div class="next-card-sub">Node-based branching NPC conversations</div>
+        </div>
+        <div class="next-arrow">↗</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

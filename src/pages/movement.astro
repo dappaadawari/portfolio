@@ -1,0 +1,113 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Movement System — Adawari Dappa</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#0a0a0a;--bg2:#111111;--bg3:#181818;--border:#222222;--accent:#c8f060;--text:#e8e8e8;--muted:#666;--muted2:#444;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.92);backdrop-filter:blur(12px);}
+  .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.02em;}.nav-logo span{color:var(--accent);}
+  .nav-back{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);text-decoration:none;transition:color 0.2s;}.nav-back:hover{color:var(--text);}
+  .grid-dec{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;}
+  .hero{padding:140px 48px 80px;max-width:900px;margin:0 auto;}
+  .case-type{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);background:rgba(200,240,96,0.08);padding:5px 12px;border-radius:2px;margin-bottom:20px;}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:24px;}
+  .hero-desc{font-size:18px;color:#999;line-height:1.7;max-width:680px;margin-bottom:40px;}
+  .meta-row{display:flex;gap:40px;flex-wrap:wrap;padding:24px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .meta-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .meta-value{font-size:14px;color:var(--text);font-weight:500;}
+  .content{max-width:900px;margin:0 auto;padding:0 48px 120px;}
+  .section{margin-top:72px;}
+  .section-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-bottom:20px;color:var(--text);}
+  p{color:#999;font-size:16px;line-height:1.8;margin-bottom:16px;}
+  p strong{color:var(--text);font-weight:500;}
+  .callout{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:20px 24px;margin:28px 0;font-size:15px;color:#aaa;line-height:1.7;}.callout strong{color:var(--text);}
+  pre{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:28px;overflow-x:auto;margin:28px 0;}
+  code{font-family:'DM Mono',monospace;font-size:13px;line-height:1.7;color:#ccc;}
+  .kw{color:#c8f060;}.fn{color:#60a0f0;}.st{color:#f0a060;}.cm{color:#555;font-style:italic;}.nm{color:#a0d0ff;}
+  .tag-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .tag{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);padding:6px 14px;border-radius:2px;}
+  .next-cases{margin-top:100px;padding-top:48px;border-top:1px solid var(--border);}
+  .next-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px;}
+  .next-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .next-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:24px;text-decoration:none;color:inherit;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
+  .next-card:hover{border-color:#333;background:var(--bg3);}
+  .next-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;}
+  .next-card-sub{font-size:13px;color:var(--muted);}
+  .next-arrow{color:var(--muted2);font-size:18px;transition:all 0.2s;}.next-card:hover .next-arrow{color:var(--accent);transform:translate(3px,-3px);}
+  @media(max-width:768px){nav{padding:16px 24px;}.hero,.content{padding-left:24px;padding-right:24px;}.next-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="grid-dec"></div>
+<nav><a href="/" class="nav-logo">AD<span>.</span></a><a href="/" class="nav-back">← Back to Portfolio</a></nav>
+<div class="hero">
+  <div class="case-type">Movement · Physics · Server-Authoritative</div>
+  <h1>Movement System — Sprint, Dash, Double Jump & Sliding</h1>
+  <p class="hero-desc">Server-authoritative movement with sprint, directional dashing, double jump via LinearVelocity, and slope-aware sliding using AlignOrientation. Input tracked persistently to handle keyboard hardware ghosting.</p>
+  <div class="meta-row">
+    <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
+    <div><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
+    <div><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
+  </div>
+</div>
+<div class="content">
+  <div class="section">
+    <div class="section-label">The Problem</div>
+    <h2>Movement that feels good and stays server-authoritative</h2>
+    <p>Roblox's default character controller is limited — no sprinting, no dashing, no sliding. The goal was a full movement suite where all speed modifications and physics forces are applied server-side, while animations and input remain on the client for responsiveness.</p>
+    <div class="callout"><strong>Key challenge:</strong> Using modern physics constraints (LinearVelocity, AlignOrientation) instead of deprecated BodyVelocity/BodyGyro, and making sliding feel physically realistic on slopes.</div>
+  </div>
+  <div class="section">
+    <div class="section-label">Dashing</div>
+    <h2>Directional dashing with diagonal support</h2>
+    <p>The client reads held WASD keys persistently via InputBegan/InputEnded (not polling, to avoid hardware key ghosting where simultaneous keypresses drop signals). When Q is pressed, the held keys are sent to the server as a string like "WA" or "WD".</p>
+    <p>The server computes the dash direction from the character's CFrame — each key in the combo contributes its axis, so diagonals work naturally. The direction string is validated (1–4 chars, only WASD) before any physics are applied. A <strong>LinearVelocity</strong> constraint is added to the HumanoidRootPart for the dash duration then destroyed.</p>
+<pre><code><span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"W"</span>) <span class="kw">then</span> direction += lookVector  <span class="kw">end</span>
+<span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"S"</span>) <span class="kw">then</span> direction -= lookVector  <span class="kw">end</span>
+<span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"D"</span>) <span class="kw">then</span> direction += rightVector <span class="kw">end</span>
+<span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"A"</span>) <span class="kw">then</span> direction -= rightVector <span class="kw">end</span></code></pre>
+  </div>
+  <div class="section">
+    <div class="section-label">Slope-Aware Sliding</div>
+    <h2>Physics-driven sliding that responds to terrain</h2>
+    <p>Sliding uses a <strong>LinearVelocity</strong> for forward momentum and an <strong>AlignOrientation</strong> to tilt the character to match the surface normal — so they lean into slopes visually. A raycast fires downward every Heartbeat; if no ground is detected the slide stops automatically.</p>
+    <p>A speed multiplier starts at 1.0 and changes based on vertical position delta each frame — accelerating downhill, decelerating on flat ground, decelerating faster going uphill. When the multiplier drops below 0.1 the slide ends naturally.</p>
+<pre><code><span class="kw">if</span> verticalChange < <span class="nm">0.1</span> <span class="kw">and</span> verticalChange > <span class="nm">-0.1</span> <span class="kw">then</span>
+    currentMultiplier = <span class="fn">math.clamp</span>(
+        currentMultiplier - slideSettings.SpeedChangeRate.Forward * dt,
+        <span class="nm">0</span>, slideSettings.MaxMultiplier)
+<span class="kw">elseif</span> verticalChange < <span class="nm">0</span> <span class="kw">then</span> <span class="cm">-- going downhill, add speed</span>
+    currentMultiplier = <span class="fn">math.clamp</span>(
+        currentMultiplier + slideSettings.SpeedChangeRate.Downward * dt,
+        <span class="nm">0</span>, slideSettings.MaxMultiplier)
+<span class="kw">end</span></code></pre>
+  </div>
+  <div class="section">
+    <div class="section-label">Double Jump</div>
+    <h2>Mid-air jump using LinearVelocity</h2>
+    <p>Double jump fires a brief <strong>LinearVelocity</strong> along the Y axis for 0.12 seconds, then destroys itself. It's gated behind a <strong>FloorMaterial == Air</strong> check and a per-character cooldown attribute. Using LinearVelocity instead of manipulating AssemblyLinearVelocity directly gives a cleaner, more controllable impulse without fighting Roblox's physics solver.</p>
+    <div class="tag-list">
+      <span class="tag">Lua</span><span class="tag">LinearVelocity</span><span class="tag">AlignOrientation</span><span class="tag">Raycasting</span><span class="tag">Physics Constraints</span><span class="tag">Server-Authoritative</span>
+    </div>
+  </div>
+  <div class="next-cases">
+    <div class="next-label">More Case Studies</div>
+    <div class="next-grid">
+      <a href="/combat" class="next-card"><div><div class="next-card-title">Combat System</div><div class="next-card-sub">Hitboxes, state machine & anti-cheat</div></div><div class="next-arrow">↗</div></a>
+      <a href="/inventory" class="next-card"><div><div class="next-card-title">Inventory & Datastore</div><div class="next-card-sub">Session locking, data safety, world items</div></div><div class="next-arrow">↗</div></a>
+      <a href="/weather" class="next-card"><div><div class="next-card-title">Weather & Time-of-Day</div><div class="next-card-sub">Dynamic world state, precipitation, temperature</div></div><div class="next-arrow">↗</div></a>
+      <a href="/dialogue" class="next-card"><div><div class="next-card-title">Dialogue System</div><div class="next-card-sub">Node-based branching NPC conversations</div></div><div class="next-arrow">↗</div></a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Weather & Time-of-Day System — Adawari Dappa</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#0a0a0a;--bg2:#111111;--bg3:#181818;--border:#222222;--accent:#c8f060;--text:#e8e8e8;--muted:#666;--muted2:#444;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.92);backdrop-filter:blur(12px);}
+  .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.02em;}.nav-logo span{color:var(--accent);}
+  .nav-back{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);text-decoration:none;transition:color 0.2s;}.nav-back:hover{color:var(--text);}
+  .grid-dec{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;}
+  .hero{padding:140px 48px 80px;max-width:900px;margin:0 auto;}
+  .case-type{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);background:rgba(200,240,96,0.08);padding:5px 12px;border-radius:2px;margin-bottom:20px;}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:24px;}
+  .hero-desc{font-size:18px;color:#999;line-height:1.7;max-width:680px;margin-bottom:40px;}
+  .meta-row{display:flex;gap:40px;flex-wrap:wrap;padding:24px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .meta-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .meta-value{font-size:14px;color:var(--text);font-weight:500;}
+  .content{max-width:900px;margin:0 auto;padding:0 48px 120px;}
+  .section{margin-top:72px;}
+  .section-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-bottom:20px;color:var(--text);}
+  p{color:#999;font-size:16px;line-height:1.8;margin-bottom:16px;}
+  p strong{color:var(--text);font-weight:500;}
+  .callout{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:20px 24px;margin:28px 0;font-size:15px;color:#aaa;line-height:1.7;}.callout strong{color:var(--text);}
+  pre{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:28px;overflow-x:auto;margin:28px 0;}
+  code{font-family:'DM Mono',monospace;font-size:13px;line-height:1.7;color:#ccc;}
+  .kw{color:#c8f060;}.fn{color:#60a0f0;}.st{color:#f0a060;}.cm{color:#555;font-style:italic;}.nm{color:#a0d0ff;}
+  .tag-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .tag{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);border:1px solid var(--border);padding:6px 14px;border-radius:2px;}
+  .next-cases{margin-top:100px;padding-top:48px;border-top:1px solid var(--border);}
+  .next-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px;}
+  .next-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .next-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:24px;text-decoration:none;color:inherit;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
+  .next-card:hover{border-color:#333;background:var(--bg3);}
+  .next-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;}
+  .next-card-sub{font-size:13px;color:var(--muted);}
+  .next-arrow{color:var(--muted2);font-size:18px;transition:all 0.2s;}.next-card:hover .next-arrow{color:var(--accent);transform:translate(3px,-3px);}
+  @media(max-width:768px){nav{padding:16px 24px;}.hero,.content{padding-left:24px;padding-right:24px;}.next-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="grid-dec"></div>
+<nav><a href="/" class="nav-logo">AD<span>.</span></a><a href="/" class="nav-back">← Back to Portfolio</a></nav>
+<div class="hero">
+  <div class="case-type">Environment · Systems · World State</div>
+  <h1>Weather & Time-of-Day System</h1>
+  <p class="hero-desc">A full weather cycle with weighted random selection, precipitation particles, ambient audio, sky tweening, indoor detection via raycasting, and per-player temperature lerping driven by time-of-day.</p>
+  <div class="meta-row">
+    <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
+    <div><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
+    <div><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
+  </div>
+</div>
+<div class="content">
+  <div class="section">
+    <div class="section-label">The Problem</div>
+    <h2>A living world needs more than a skybox swap</h2>
+    <p>Most games with "weather" simply swap a skybox. The goal was a fully simulated world state — weather that affects temperature, audio, visuals, terrain color, and player experience simultaneously, driven by a real time-of-day cycle.</p>
+    <div class="callout"><strong>Design goal:</strong> Weather should feel like a real system — weighted probability, smooth transitions, environmental consequences, and player-aware effects like indoor detection.</div>
+  </div>
+  <div class="section">
+    <div class="section-label">Time-of-Day Cycle</div>
+    <h2>A real clock driving world attributes</h2>
+    <p>The TOD cycle runs on <strong>RunService.Heartbeat</strong>, incrementing a clock each frame scaled to the configured day/night lengths (3 min day, 6 min night). <code>Lighting.ClockTime</code> updates every frame for accurate sun positioning. A parallel coroutine sets workspace attributes (<strong>TimeOfDay</strong>, <strong>DayOrNight</strong>) based on the current hour, which all other systems listen to reactively.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">Weather Selection</div>
+    <h2>Weighted random weather that never repeats back-to-back</h2>
+    <p>Each weather type has a configured weight. The roll function builds a cumulative probability range, picks a random float, and returns the matching weather. The current weather is always excluded so the same type never repeats consecutively. <strong>Sunny</strong> is flagged daytime-only — if rolled at night it falls back to Clear automatically.</p>
+<pre><code><span class="kw">local function</span> <span class="fn">rollWeather</span>(excludeWeather)
+    <span class="kw">local</span> totalWeight = <span class="nm">0</span>
+    <span class="kw">for</span> name, data <span class="kw">in</span> <span class="fn">pairs</span>(weatherConfig) <span class="kw">do</span>
+        <span class="kw">if</span> name ~= excludeWeather <span class="kw">then</span> totalWeight += data.weight <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="kw">local</span> range = <span class="fn">math.random</span>() * totalWeight
+    <span class="kw">local</span> acc = <span class="nm">0</span>
+    <span class="kw">for</span> name, v <span class="kw">in</span> <span class="fn">pairs</span>(weatherConfig) <span class="kw">do</span>
+        <span class="kw">if</span> name ~= excludeWeather <span class="kw">then</span>
+            acc += v.weight
+            <span class="kw">if</span> range <= acc <span class="kw">then</span> <span class="kw">return</span> name <span class="kw">end</span>
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+  </div>
+  <div class="section">
+    <div class="section-label">Client Effects</div>
+    <h2>Sky, atmosphere, precipitation, audio, and terrain</h2>
+    <p>On weather change the client tweens <strong>Atmosphere</strong> and <strong>Clouds</strong> to the new values over 3 seconds, swaps the Sky asset, and adjusts SunRays for sunny weather. For rain and snow, a <strong>SkyPart</strong> welded to the player's HumanoidRootPart emits particles above them. A raycast fires upward every 0.5s — if a roof is detected, emitters disable and ambient audio volume drops, simulating being indoors. Snow tweens tagged terrain parts to white via CollectionService and reverts on weather change.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">Temperature System</div>
+    <h2>Per-player temperature lerping</h2>
+    <p>Each weather type offsets the base temperature. The TOD cycle adds random variance — warmer at noon, cooler at night. When the workspace Temperature attribute changes, each player's character attribute lerps toward the target on Heartbeat at a configurable rate. Any in-progress lerp is cancelled before a new one starts to prevent conflicts.</p>
+    <div class="tag-list">
+      <span class="tag">Lua</span><span class="tag">RunService</span><span class="tag">TweenService</span><span class="tag">CollectionService</span><span class="tag">Raycasting</span><span class="tag">Particle Effects</span><span class="tag">Ambient Audio</span>
+    </div>
+  </div>
+  <div class="next-cases">
+    <div class="next-label">More Case Studies</div>
+    <div class="next-grid">
+      <a href="/combat" class="next-card"><div><div class="next-card-title">Combat System</div><div class="next-card-sub">Hitboxes, state machine & anti-cheat</div></div><div class="next-arrow">↗</div></a>
+      <a href="/inventory" class="next-card"><div><div class="next-card-title">Inventory & Datastore</div><div class="next-card-sub">Session locking, data safety, world items</div></div><div class="next-arrow">↗</div></a>
+      <a href="/movement" class="next-card"><div><div class="next-card-title">Movement System</div><div class="next-card-sub">Sprint, dash, double jump, slope sliding</div></div><div class="next-arrow">↗</div></a>
+      <a href="/dialogue" class="next-card"><div><div class="next-card-title">Dialogue System</div><div class="next-card-sub">Node-based branching NPC conversations</div></div><div class="next-arrow">↗</div></a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
