@@ -369,14 +369,14 @@
   <div class="case-type">Server · Client · Game Systems</div>
   <h1>Combat System — Hitboxes, State Machine & Anti-Cheat</h1>
   <p class="hero-desc">
-    A fully server-authoritative M1 combo system with critical attacks, blocking, parrying, 
-    and endlag. The client handles animation and input only — all damage, validation, 
+    A fully server authoritative M1 combo system with critical attacks, blocking, parrying, 
+    and endlag. The client handles animation (not implemented yet) and input only. All damage, validation, 
     and state lives on the server.
   </p>
   <div class="meta-row">
     <div class="meta-item">
       <div class="meta-label">Timeline</div>
-      <div class="meta-value">2024 — Ongoing</div>
+      <div class="meta-value">March 2026 — Ongoing</div>
     </div>
     <div class="meta-item">
       <div class="meta-label">Language</div>
@@ -404,21 +404,21 @@
   <!-- PROBLEM -->
   <div class="section">
     <div class="section-label">The Problem</div>
-    <h2>Client-side combat is exploitable by design</h2>
+    <h2>What info should the client have control over?</h2>
     <p>
-      In most beginner Roblox games, combat is handled entirely on the client — the player's 
-      machine decides when a hit lands, how much damage is dealt, and whether the attack was 
-      valid. This is easy to exploit. Any player can fire a remote event with fake hit data 
-      and deal unlimited damage.
+      In Roblox games with combat, secutiry over the combat system is of most importance, as exploiters 
+      can easily ruin the experience for other players. Common exploits include things like hitbox extenders 
+      firing their own damage values from remotes, changing their state to allow them to do actions when they aren't supposed to ,  
+      or spamming remote events to overload the server and cause lag, potentially crashing the server.
     </p>
     <p>
       The challenge was building a combat system where <strong>the client never has authority 
-      over damage or state</strong> — it only drives visuals and input — while still feeling 
-      responsive and snappy to play.
+      over damage, state, hitboxes, and can't easily overload the server.</strong> 
+      The client should only handle visuals and input — while still feeling responsive and in sync with the server.
     </p>
     <div class="callout">
       <strong>Core constraint:</strong> The server must validate every hit, manage every state 
-      transition, and be the single source of truth — but the player must never feel lag or 
+      transition, and be the single source of truth. The player must never feel lag or 
       desync between what they see and what the server knows.
     </div>
   </div>
@@ -429,8 +429,8 @@
     <h2>Clean client/server split</h2>
     <p>
       The system is split across six modules with clearly defined responsibilities. 
-      No module crosses its boundary — the client never touches damage, 
-      the server never touches animation.
+      No module crosses its respective boundary. The client handles visuals and input purely, while 
+      the server handles everything else.
     </p>
 
     <div class="diagram">
@@ -454,11 +454,11 @@
       <strong>InputHandler</strong> (client) reads player input, plays the animation immediately 
       for responsiveness, then waits for the hit timestamp before casting the hitbox and 
       firing to the server. This means the server receives the event at the exact frame 
-      the hit would land — not before.
+      the hit would land, not before.
     </p>
     <p>
       <strong>CombatServer</strong> receives the event, runs distance validation on every 
-      reported humanoid, checks the player's current state (can't attack while blocking, 
+      reported humanoid hit by the hitbox, checks the player's current state (can't attack while blocking, 
       in endlag, etc.), applies damage, and fires a StateUpdate back to all relevant clients.
     </p>
     <p>
@@ -474,11 +474,11 @@
     <h2>Why deferred hitbox casting?</h2>
     <p>
       A naive implementation fires the hitbox the moment the player clicks. But animations 
-      have a wind-up — the sword hasn't reached the target yet. Casting immediately means 
-      hits register before the visual swing, which feels wrong and is easy to abuse.
+      have a wind-up before the "events", so the sword hasn't reached the target yet. Casting immediately means 
+      hits register before the visual swing, which feels wrong and makes combat feel janky.
     </p>
     <p>
-      Each hit in the style data carries a <strong>hitTimestamp</strong> — the number of 
+      Each hit in the style data carries a <strong>hitTimestamp</strong>, (acting as an animation event) the number of 
       seconds after the click when the hit frame fires. The client defers the hitbox cast 
       using <code>task.delay(hitTimestamp)</code>, so the spatial query runs at the exact 
       moment the animation connects visually.
@@ -513,7 +513,7 @@
     <span class="keyword">return</span> confirmed
 <span class="keyword">end</span></code></pre>
 
-    <h2>Blocking vs Parrying — timing matters</h2>
+    <h2>Blocking vs Parrying, timing matters</h2>
     <p>
       When a player holds the block key, they enter a <strong>Parrying</strong> state for 
       150ms before transitioning to a sustained <strong>Blocking</strong> state. A hit that 
@@ -529,29 +529,31 @@
     <h2>Rate limiting all combat events</h2>
     <p>
       Every combat remote event passes through a <strong>RateLimiter</strong> before any 
-      logic runs. Each player gets a rolling window — max 30 actions per 5 seconds. 
+      logic runs. Each player gets a rolling window, max 30 actions per 5 seconds. 
       Timestamps outside the window are pruned on each check. Players who exceed the 
       limit are warned and their action is silently dropped.
     </p>
     <p>
-      This doesn't just catch speed hackers — it also prevents edge cases where 
-      client bugs could spam the server with repeated events.
+      This is to thwart exploiters spamming the server with requests, and also punishes players 
+      who spam quick inputs through things like macros which they use to give them unfair advantages over
+      normal players.
     </p>
   </div>
 
   <!-- STYLE DATA -->
   <div class="section">
     <div class="section-label">Design Pattern</div>
-    <h2>Style data as configuration, not logic</h2>
+    <h2>Style data as configuration</h2>
     <p>
-      Each combat style (sword, fist, etc.) is defined as a pure data module — 
-      no logic, just configuration. Combo length, hit damage, hitbox sizes, animation names, 
-      and flourish functions are all declared in one place. The server loads the correct 
+      Each combat style (sword, fist, etc.) is defined as a pure data module just configuration. 
+      Combo length, hit damage, hitbox sizes, animation names, 
+      and flourish functions are all declared in a style's respective module. The server loads the correct 
       style for each player dynamically via <strong>PlayerData.GetStyleData()</strong>.
     </p>
     <p>
       This means adding a new weapon style requires <strong>zero changes to the combat 
-      server</strong> — you just write a new data module and drop it in the right folder.
+      server</strong>, you just write a new data module and drop it in the right folder. This allows for 
+      various unique styles all with different functions that can be added.
     </p>
 
     <pre><code><span class="comment">-- Base style data (data only, no logic)</span>
@@ -575,10 +577,10 @@ hits = &#123;
       and how to keep the experience feeling responsive.
     </p>
     <p>
-      The deferred hitbox pattern was the most important insight — <strong>responsiveness 
-      and server authority aren't mutually exclusive</strong> if you time your events 
-      correctly. The client plays the animation instantly; the server just receives 
-      the event a fraction of a second later at the right moment.
+      The addition of easily configurable combat styles was also very important, especially with being 
+      able to have my main combat function easily support it without needing serious restructuring to
+      support a specific type of new style. This means I can come back and add functionality to it easily any time 
+      I want. It was probably my favorite part of the overall design, and I think it is good for a basis.
     </p>
     <div class="tag-list">
       <span class="tag">Lua</span>

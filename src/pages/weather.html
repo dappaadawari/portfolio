@@ -53,7 +53,7 @@
   <h1>Weather & Time-of-Day System</h1>
   <p class="hero-desc">A full weather cycle with weighted random selection, precipitation particles, ambient audio, sky tweening, indoor detection via raycasting, and per-player temperature lerping driven by time-of-day.</p>
   <div class="meta-row">
-    <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div><div class="meta-label">Timeline</div><div class="meta-value">November 2025 — December 2025</div></div>
     <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
     <div><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
     <div><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
@@ -67,19 +67,19 @@
 <div class="content">
   <div class="section">
     <div class="section-label">The Problem</div>
-    <h2>A living world needs more than a skybox swap</h2>
-    <p>Most games with "weather" simply swap a skybox. The goal was a fully simulated world state — weather that affects temperature, audio, visuals, terrain color, and player experience simultaneously, driven by a real time-of-day cycle.</p>
-    <div class="callout"><strong>Design goal:</strong> Weather should feel like a real system — weighted probability, smooth transitions, environmental consequences, and player-aware effects like indoor detection.</div>
+    <h2>How to make a world feel more "alive"</h2>
+    <p>Most games do not have weather systems on Roblox. The goal was a fully simulated world state weather that affects temperature, audio, visuals, terrain color, and player experience simultaneously, driven by a time-of-day cycle.</p>
+    <div class="callout"><strong>Design goal:</strong> Weather should feel like a real system, be scalable and visually responsive</div>
   </div>
   <div class="section">
     <div class="section-label">Time-of-Day Cycle</div>
     <h2>A real clock driving world attributes</h2>
-    <p>The TOD cycle runs on <strong>RunService.Heartbeat</strong>, incrementing a clock each frame scaled to the configured day/night lengths (3 min day, 6 min night). <code>Lighting.ClockTime</code> updates every frame for accurate sun positioning. A parallel coroutine sets workspace attributes (<strong>TimeOfDay</strong>, <strong>DayOrNight</strong>) based on the current hour, which all other systems listen to reactively.</p>
+    <p>The TOD cycle runs on <strong>RunService.Heartbeat</strong>, incrementing a clock each frame scaled to the configured day/night lengths (3 min day, 6 min night for my testing). <code>Lighting.ClockTime</code> updates every frame for accurate sun positioning. A parallel coroutine sets workspace attributes (<strong>TimeOfDay</strong>, <strong>DayOrNight</strong>) based on the current hour, which all other systems listen to reactively.</p>
   </div>
   <div class="section">
     <div class="section-label">Weather Selection</div>
     <h2>Weighted random weather that never repeats back-to-back</h2>
-    <p>Each weather type has a configured weight. The roll function builds a cumulative probability range, picks a random float, and returns the matching weather. The current weather is always excluded so the same type never repeats consecutively. <strong>Sunny</strong> is flagged daytime-only — if rolled at night it falls back to Clear automatically.</p>
+    <p>Each weather type has a configured weight. The roll function builds a cumulative probability range, picks a random float, and returns the matching weather. The current weather is always excluded so the same type never repeats consecutively. <strong>Sunny</strong> is flagged daytime-only meaning if rolled at night it falls back to Clear automatically.</p>
 <pre><code><span class="kw">local function</span> <span class="fn">rollWeather</span>(excludeWeather)
     <span class="kw">local</span> totalWeight = <span class="nm">0</span>
     <span class="kw">for</span> name, data <span class="kw">in</span> <span class="fn">pairs</span>(weatherConfig) <span class="kw">do</span>
@@ -98,12 +98,12 @@
   <div class="section">
     <div class="section-label">Client Effects</div>
     <h2>Sky, atmosphere, precipitation, audio, and terrain</h2>
-    <p>On weather change the client tweens <strong>Atmosphere</strong> and <strong>Clouds</strong> to the new values over 3 seconds, swaps the Sky asset, and adjusts SunRays for sunny weather. For rain and snow, a <strong>SkyPart</strong> welded to the player's HumanoidRootPart emits particles above them. A raycast fires upward every 0.5s — if a roof is detected, emitters disable and ambient audio volume drops, simulating being indoors. Snow tweens tagged terrain parts to white via CollectionService and reverts on weather change.</p>
+    <p>On weather change the client tweens <strong>Atmosphere</strong> and <strong>Clouds</strong> to the new values over 3 seconds, swaps the Sky asset, and adjusts SunRays for sunny weather. For rain and snow, a <strong>SkyPart</strong> welded to the player's HumanoidRootPart emits particles above them. A raycast fires upward every 0.5s. If a roof is detected, emitters disable and ambient audio volume drops, simulating being indoors. Snow tweens tagged terrain parts to white via CollectionService and reverts on weather change.</p>
   </div>
   <div class="section">
     <div class="section-label">Temperature System</div>
     <h2>Per-player temperature lerping</h2>
-    <p>Each weather type offsets the base temperature. The TOD cycle adds random variance — warmer at noon, cooler at night. When the workspace Temperature attribute changes, each player's character attribute lerps toward the target on Heartbeat at a configurable rate. Any in-progress lerp is cancelled before a new one starts to prevent conflicts.</p>
+    <p>Each weather type offsets the base temperature. The TOD cycle adds random variance, being warmer at noon, cooler at night. When the workspace Temperature attribute changes, each player's character attribute lerps toward the target on Heartbeat at a configurable rate. Any in-progress lerp is cancelled before a new one starts to prevent conflicts.</p>
     <div class="tag-list">
       <span class="tag">Lua</span><span class="tag">RunService</span><span class="tag">TweenService</span><span class="tag">CollectionService</span><span class="tag">Raycasting</span><span class="tag">Particle Effects</span><span class="tag">Ambient Audio</span>
     </div>

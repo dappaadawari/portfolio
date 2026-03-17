@@ -65,7 +65,7 @@
   <h1>Inventory & Datastore System — Session Locking & Data Safety</h1>
   <p class="hero-desc">Persistent player data with session locking, versioned saves, backup keys, and autosave. A fully reactive inventory UI with stackable items, weight limits, and server-validated world item pickups.</p>
   <div class="meta-row">
-    <div class="meta-item"><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div class="meta-item"><div class="meta-label">Timeline</div><div class="meta-value">December 2025 — Feburary 2026</div></div>
     <div class="meta-item"><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
     <div class="meta-item"><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
     <div class="meta-item"><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
@@ -80,7 +80,7 @@
   <div class="section">
     <div class="section-label">The Problem</div>
     <h2>Player data is the most fragile part of any game</h2>
-    <p>DataStore failures, server crashes, and players joining from multiple servers simultaneously can all corrupt or overwrite player data. Most beginner implementations just call <strong>SetAsync on PlayerRemoving</strong> and hope for the best — no locking, no retries, no backups.</p>
+    <p>DataStore failures, server crashes, and players joining from multiple servers simultaneously can all corrupt or overwrite player data. Most beginner implementations just call <strong>SetAsync on PlayerRemoving</strong> and hope for the best.</p>
     <p>The goal was to build a data layer that could survive edge cases: a player rejoining immediately after a crash, a DataStore outage mid-session, or two servers racing to save the same player's data.</p>
     <div class="callout"><strong>Core constraint:</strong> Data must never be lost or duplicated, even if the server shuts down unexpectedly, the DataStore is temporarily unavailable, or a player joins two servers at once.</div>
   </div>
@@ -88,7 +88,7 @@
     <div class="section-label">Session Locking</div>
     <h2>Preventing multi-server data conflicts</h2>
     <p>When a player joins, <strong>DataManager</strong> acquires a session lock using <code>UpdateAsync</code> on a separate lock store. The lock stores the server's JobId and a timestamp. If another server already holds a fresh lock for that player, the joining player is kicked with a message to rejoin shortly.</p>
-    <p>Locks older than <strong>300 seconds</strong> are treated as stale (e.g. from a crashed server) and overwritten automatically. On PlayerRemoving, the lock is released before the session data is wiped.</p>
+    <p>Locks older than <strong>300 seconds</strong> are treated as stale (like from a crashed server) and overwritten automatically. On PlayerRemoving, the lock is released before the session data is wiped.</p>
 <pre><code><span class="keyword">return</span> lockStore:<span class="fn">UpdateAsync</span>(<span class="str">"Lock_"</span> .. userId, <span class="keyword">function</span>(existing)
     <span class="keyword">if</span> existing == <span class="keyword">nil</span> <span class="keyword">then</span> <span class="keyword">return</span> { jobId = jobId, timestamp = now } <span class="keyword">end</span>
     <span class="keyword">if</span> existing.jobId == jobId <span class="keyword">then</span> <span class="keyword">return</span> { jobId = jobId, timestamp = now } <span class="keyword">end</span>
@@ -101,20 +101,20 @@
   <div class="section">
     <div class="section-label">Data Safety</div>
     <h2>Backups, retries, and versioning</h2>
-    <p>Every save writes a backup of the <em>previous</em> save to a separate backup DataStore before overwriting the main key. This means a failed save never destroys the last good state — the backup always reflects the last confirmed write.</p>
-    <p>All DataStore calls are wrapped in a retry loop — up to <strong>3 attempts with 2-second delays</strong>. If all retries fail on load, the player is kicked rather than allowed to play on empty data. On save failure, a warning is logged but the session continues.</p>
-    <p>Save data carries a <strong>version number</strong>. When a player loads, if their saved version is older than the current schema, a migration chain runs — each step upgrading one version at a time — before the data is validated and populated into the session.</p>
+    <p>Every save writes a backup of the <em>previous</em> save to a separate backup DataStore before overwriting the main key. This means a failed save never destroys the last good state, the backup always reflects the last confirmed write.</p>
+    <p>All DataStore calls are wrapped in a retry loop with up to <strong>3 attempts with 2-second delays</strong>. If all retries fail on load, the player is kicked rather than allowed to play on empty data. On save failure, a warning is logged but the session continues.</p>
+    <p>Save data carries a <strong>version number</strong>. When a player loads, if their saved version is older than the current schema, a migration chain runs, each step upgrading one version at a time before the data is validated and populated into the session.</p>
   </div>
   <div class="section">
     <div class="section-label">Inventory Design</div>
     <h2>Stackable items, weight, and world drops</h2>
     <p>The inventory supports both stackable and non-stackable items. Adding a stackable item searches for an existing slot with room before creating a new one. Each item has a <strong>weight</strong> value — the player's total carried weight is tracked and capped, with weight attributes synced to the character for the client to read reactively.</p>
-    <p>When a player drops an item, <strong>WorldItemManager</strong> spawns a plain Model in the workspace (not a Tool, to avoid Roblox's auto-pickup) with a ClickDetector. On click, the server does a radius check — if the player is within 10 studs, the item is claimed atomically (removed from tracking before AddItem is called) to prevent two players picking it up in the same frame.</p>
+    <p>When a player drops an item, <strong>WorldItemManager</strong> spawns a plain Model in the workspace (not a Tool, to avoid Roblox's auto-pickup) with a ClickDetector. On click, the server does a radius check, if the player is within 10 studs, the item is claimed atomically (removed from tracking before AddItem is called) to prevent two players picking it up in the same frame.</p>
   </div>
   <div class="section">
     <div class="section-label">Client UI</div>
     <h2>Reactive inventory with race condition guards</h2>
-    <p>The inventory client fetches a snapshot of the player's inventory on load via RemoteFunction, then listens for <code>AddItem</code> and <code>RemoveItem</code> RemoteEvents. Events that arrive before the initial snapshot finishes loading are queued and replayed in order once setup is complete — preventing duplicate nodes or missed updates during the load window.</p>
+    <p>The inventory client fetches a snapshot of the player's inventory on load via RemoteFunction, then listens for <code>AddItem</code> and <code>RemoveItem</code> RemoteEvents. Events that arrive before the initial snapshot finishes loading are queued and replayed in order once setup is complete, preventing duplicate nodes or missed updates during the load window.</p>
     <p>Each inventory node has a duplicate guard: if a node for a given UID already exists, it updates the amount label rather than spawning a second GuiObject. Hover tooltips show item name, description, and rarity, and are cleaned up immediately when the last item is removed.</p>
     <div class="tag-list">
       <span class="tag">Lua</span><span class="tag">DataStoreService</span><span class="tag">Session Locking</span><span class="tag">Version Migration</span><span class="tag">Inventory UI</span><span class="tag">World Items</span><span class="tag">OOP</span>

@@ -50,10 +50,10 @@
 <nav><a href="/" class="nav-logo">AD<span>.</span></a><a href="/" class="nav-back">← Back to Portfolio</a></nav>
 <div class="hero">
   <div class="case-type">RPG Systems · Progression · Procedural</div>
-  <h1>Stat & Progression System — Races, Leveling & Skill Points</h1>
-  <p class="hero-desc">A full RPG progression layer with weighted race and variant rolling, procedurally generated names by gender, a nonlinear 100-level XP curve, handcrafted skill point rewards, and a reactive HUD that updates live from player attributes.</p>
+  <h1>Stat & Progression System: Races, Leveling & Skill Points</h1>
+  <p class="hero-desc">A full RPG progression layer with weighted race and variant rolling, randomly generated names by gender, a nonlinear 100 level XP curve with skill point rewards, and a reactive HUD that updates live from player attributes.</p>
   <div class="meta-row">
-    <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div><div class="meta-label">Timeline</div><div class="meta-value">July 2025 - Ongoing</div></div>
     <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
     <div><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
     <div><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
@@ -67,14 +67,14 @@
 <div class="content">
   <div class="section">
     <div class="section-label">The Problem</div>
-    <h2>Meaningful character identity from the moment you spawn</h2>
-    <p>Most games assign every player the same base stats and the same starting experience. The goal here was a system where your character feels distinct immediately — a randomly rolled race with its own stats, a procedurally generated name, and a progression path that requires real investment to develop.</p>
-    <div class="callout"><strong>Design goal:</strong> Character identity should be established on spawn and deepen over time — through race bonuses, stat allocation, and a leveling curve that rewards long-term play.</div>
+    <h2>Capturing the "feel" of an RPG and making players feel special and immersed.</h2>
+    <p>Most games assign every player the same base stats and the same starting experience. The goal here was a system where your character feels distinct immediately: a randomly rolled race with its own stats, a name based on race and gender, and a progression path that requires real investment to advance.</p>
+    <div class="callout"><strong>Design goal:</strong> Character identity should be established on spawn and deepen over time through long-term play, getting the player invested in their character.</div>
   </div>
   <div class="section">
     <div class="section-label">Race System</div>
     <h2>Weighted rolling with rare variants</h2>
-    <p>Six races are defined with individual spawn weights (Human 0.80, Elf 0.32, Giant 0.12, down to Demon, Angel, and Undead at 0.02 each). On spawn, a cumulative probability roll determines the player's race. A second roll then picks a race variant — each race has 3–4 variants with their own sub-weights, including ultra-rare variants like Seraphim (0.01) or Sin Demon (0.01).</p>
+    <p>Six races are defined with individual spawn weights (Human 0.80, Elf 0.32, Giant 0.12, down to Demon, Angel, and Undead at 0.02 each). On spawn, a cumulative probability roll determines the player's race. A second roll then picks a race variant. Each race has 3–4 variants with their own sub weights, including ultra rare variants like Seraphim (0.01) or Sin Demon (0.01).</p>
 <pre><code><span class="kw">local function</span> <span class="fn">rollRace</span>()
     <span class="kw">local</span> randomValue = <span class="fn">math.random</span>()
     <span class="kw">local</span> cumulativeChance = <span class="nm">0</span>
@@ -90,12 +90,12 @@
   <div class="section">
     <div class="section-label">Procedural Names</div>
     <h2>Names that match character gender</h2>
-    <p>Each player is assigned a gender (Masculine/Feminine) then a name randomly selected from a curated list of 50+ names per gender — fantasy-leaning names designed to fit the game's world. The name is stored as a player attribute and displayed in the HUD. This small detail makes every character feel like a unique person rather than "Player123."</p>
+    <p>Each player is assigned a gender (Masculine/Feminine) then a name randomly selected from a curated list of 50+ names per gender and race, fantasy leaning names designed to fit the game's world. The name is stored as a player attribute and displayed in the HUD. This small detail makes every character feel like a unique person rather than "Player123."</p>
   </div>
   <div class="section">
     <div class="section-label">Leveling Curve</div>
     <h2>A nonlinear XP formula that scales with level</h2>
-    <p>XP needed to level up uses a piecewise formula — one curve for levels 1–49, a steeper curve for 50–89, and the steepest for 90–100. This keeps early levels fast and rewarding while making the endgame a serious commitment. The formula is evaluated live so tweaking the constants changes the whole curve without touching any other code.</p>
+    <p>XP needed to level up uses a piecewise formula, one curve for levels 1–49, a steeper curve for 50–89, and the steepest for 90–100. This keeps early levels fast and rewarding while making the endgame a serious commitment. The formula is evaluated live so tweaking the constants changes the whole curve without touching any other code.</p>
 <pre><code><span class="kw">local function</span> <span class="fn">ExpNeeded</span>(level)
     <span class="kw">if</span>     level < <span class="nm">50</span>  <span class="kw">then</span> <span class="kw">return</span> <span class="fn">math.floor</span>(<span class="nm">100</span>  * level^<span class="nm">1.5</span>)
     <span class="kw">elseif</span> level < <span class="nm">90</span>  <span class="kw">then</span> <span class="kw">return</span> <span class="fn">math.floor</span>(<span class="nm">150</span>  * level^<span class="nm">1.7</span>)
@@ -106,12 +106,12 @@
   <div class="section">
     <div class="section-label">Skill Points</div>
     <h2>Handcrafted rewards, not a simple formula</h2>
-    <p>Skill point rewards are defined in an explicit 100-entry lookup table rather than calculated by formula. This gives full control over the reward pacing — bigger bursts in the early-mid game (levels 5–40), tapering off in the endgame, with "rest" levels at every third level that award nothing. Players don't earn skill points until level 5, giving the early game time to establish identity before build decisions begin.</p>
+    <p>Skill point rewards are defined in an explicit 100-entry lookup table rather than calculated by formula. This gives full control over the reward pacing meaning bigger bursts in the early-mid game (levels 5–40), tapering off in the endgame, with "rest" levels at every third level that award nothing. Players don't earn skill points until level 5, giving the early game time to establish identity before build decisions begin.</p>
   </div>
   <div class="section">
     <div class="section-label">HUD</div>
     <h2>Reactive UI driven by attribute signals</h2>
-    <p>The HUD listens to player attribute change signals directly — <code>GetAttributeChangedSignal</code> for Gold, Level, Exp, SkillPoints, and Mana. Health and MaxHealth use Humanoid property signals. Every bar and label updates live without polling or RemoteEvents. The stats panel is built dynamically from the Stats folder's attributes so new stats are added automatically without touching the HUD code.</p>
+    <p>The HUD listens to player attribute change signals directly: <code>GetAttributeChangedSignal</code> for Gold, Level, Exp, SkillPoints, and Mana. Health and MaxHealth use Humanoid property signals. Every bar and label updates live without polling or RemoteEvents. The stats panel is built dynamically from the Stats folder's attributes so new stats are added automatically without touching the HUD code.</p>
     <div class="tag-list">
       <span class="tag">Lua</span><span class="tag">Weighted Probability</span><span class="tag">Procedural Generation</span><span class="tag">XP Curves</span><span class="tag">Skill Trees</span><span class="tag">Reactive UI</span><span class="tag">OOP</span>
     </div>

@@ -50,10 +50,10 @@
 <nav><a href="/" class="nav-logo">AD<span>.</span></a><a href="/" class="nav-back">← Back to Portfolio</a></nav>
 <div class="hero">
   <div class="case-type">Dialogue · UI · Reusable Systems</div>
-  <h1>Dialogue System — Node-Based Branching NPC Conversations</h1>
+  <h1>Dialogue System: Node-Based Branching NPC Conversations</h1>
   <p class="hero-desc">A reusable branching dialogue system driven by node graphs. Any NPC can use it by swapping a module. Supports dynamic text injection, scrollable response buttons, and clean server/client separation.</p>
   <div class="meta-row">
-    <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div><div class="meta-label">Timeline</div><div class="meta-value">November 2025</div></div>
     <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
     <div><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
     <div><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
@@ -67,14 +67,17 @@
 <div class="content">
   <div class="section">
     <div class="section-label">The Problem</div>
-    <h2>Dialogue systems shouldn't be hardcoded per NPC</h2>
-    <p>A common mistake is building dialogue directly into each NPC's script — unique UI handling, unique response logic, unique branching. This doesn't scale. The goal was a single system that any NPC in the game could use just by pointing at a data module.</p>
-    <div class="callout"><strong>Design goal:</strong> Adding a new NPC with full branching dialogue should require writing only a data module — zero changes to the dialogue system itself.</div>
+    <h2>Designing a main driver that can handle dialogue for any npc, and support brancing and looping</h2>
+    <p>A common beginner mistake is building dialogue directly into each NPC's script, unique UI handling, 
+      unique response logic, unique branching and event handling. To me, this doesn't scale the way I want it, and handling 50+ npcs like this is inconvinient. 
+      The goal was a single system that 
+      any NPC in the game could use just by pointing at a data module.</p>
+    <div class="callout"><strong>Design goal:</strong> Adding a new NPC with full branching dialogue should require writing only a data module, zero changes to the core dialogue system itself.</div>
   </div>
   <div class="section">
     <div class="section-label">Node Graph Structure</div>
-    <h2>Conversations as data, not logic</h2>
-    <p>Each NPC's dialogue is defined in a module script as a flat table of named nodes. Every node has a <strong>text</strong> field and a <strong>responses</strong> array. Each response has an <code>id</code>, display <code>text</code>, and a <code>next</code> field pointing to the next node name — or <code>nil</code> to end the conversation.</p>
+    <h2>Conversations as data</h2>
+    <p>Each NPC's dialogue is defined in a module script as a flat table of named nodes. Every node has a <strong>text</strong> field and a <strong>responses</strong> array. Each response has an <code>id</code>, display <code>text</code>, and a <code>next</code> field pointing to the next node name or <code>nil</code> to end the conversation.</p>
 <pre><code>Nodes = &#123;
     [<span class="st">"Start"</span>] = &#123;
         text = <span class="st">"Hey there, stranger. What's your deal?"</span>,
@@ -90,13 +93,14 @@
   <div class="section">
     <div class="section-label">Dynamic Text</div>
     <h2>Player name injection at display time</h2>
-    <p>Dialogue text can contain template tags like <code>&#123;playerName&#125;</code> or <code>&#123;displayName&#125;</code>. Before rendering any text the client runs it through a replacement function, swapping tags for the local player's actual values. This means NPC dialogue can feel personal without storing any player-specific data in the modules.</p>
+    <p>Dialogue text can contain template tags like <code>&#123;playerName&#125;</code> or <code>&#123;displayName&#125;</code>. Before rendering any text the client runs it through a replacement function, swapping tags for the local player's actual values. This means NPC dialogue can feel personal without storing any player-specific data in the modules. 
+    and support greater things like events in more advanced versions.</p>
   </div>
   <div class="section">
     <div class="section-label">Reusability</div>
     <h2>Adding a new NPC takes minutes</h2>
     <p>To add a new NPC to the game you create one module script following the node structure, name it <code>NPCName_Dialogue</code>, and place it as a child of the DialogueController. No other code needs to change. The system discovers and caches all dialogue modules automatically on startup.</p>
-    <p>The same UI, the same server logic, and the same RemoteEvent handle every NPC in the game. This was the most important architectural decision — keeping data and behavior fully separate.</p>
+    <p>The same UI, the same server logic, and the same RemoteEvent handle every NPC in the game. This was the most important architectural decision, keeping data and behavior fully separate.</p>
     <div class="tag-list">
       <span class="tag">Lua</span><span class="tag">Node Graph</span><span class="tag">Module Pattern</span><span class="tag">UI Design</span><span class="tag">Dynamic Text</span><span class="tag">Reusable</span><span class="tag">RemoteEvents</span>
     </div>

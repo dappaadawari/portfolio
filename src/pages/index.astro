@@ -567,8 +567,8 @@
         <span class="line2">Dappa.</span>
       </h1>
       <p class="hero-desc">
-        CS student at UT Dallas building complex, server-authoritative game systems in Lua and C++.
-        I don't just ship features — I architect systems that are clean, scalable, and built to last.
+        I am a CS student at UT Dallas building client-server game systems in Lua and C++.
+        I architect systems that are clean, scalable, resuable, and built to last.
       </p>
       <div class="hero-actions">
         <a href="#projects" class="btn-primary">View Case Studies →</a>
@@ -610,21 +610,21 @@
         <div>
           <div class="case-meta">
             <span class="case-type">Server · Client</span>
-            <span class="case-date">2024 — Ongoing</span>
+            <span class="case-date">March 2026 — Ongoing</span>
           </div>
           <div class="case-title">Combat System — Hitboxes, State Machine & Anti-Cheat</div>
           <div class="case-subtitle">
-            A fully server-authoritative M1 combo system with critical attacks, blocking, parrying, 
-            and endlag. Built a custom hitbox module, per-player rate limiter, and state controller 
-            to prevent client exploitation. Combo data is synced via remote events — the client only 
-            drives animation and input, never damage.
+            A fully server authoritative M1 combo system with critical attacks, blocking, parrying, 
+            and endlag per weapon style. Built a custom hitbox module, per-player rate limiter, and state controller 
+            to prevent client exploitation. Combo data is synced via remote events, the client only 
+            handles input.
           </div>
           <div class="case-tags">
             <span class="tag">Lua</span>
-            <span class="tag">Server-Authoritative</span>
+            <span class="tag">Server Authoritative</span>
             <span class="tag">State Machine</span>
-            <span class="tag">Anti-Cheat</span>
-            <span class="tag">OOP</span>
+            <span class="tag">Anti Cheat</span>
+            <span class="tag">Functional Programming</span>
           </div>
         </div>
         <div class="case-arrow">↗</div>
@@ -634,14 +634,14 @@
         <div>
           <div class="case-meta">
             <span class="case-type blue">Datastore · Inventory</span>
-            <span class="case-date">2024 — Ongoing</span>
+            <span class="case-date">December 2025 — Feburary 2026</span>
           </div>
-          <div class="case-title">Inventory & Datastore System — Session Locking & Data Safety</div>
+          <div class="case-title">Inventory & Datastore System, Session Locking & Data Safety</div>
           <div class="case-subtitle">
-            Persistent player data with session locking to prevent multi-server conflicts, 
+            Inventory system featuring persistent player data with session locking to prevent multi-server conflicts, 
             version migration, deep validation, backup keys, and autosave. Inventory supports 
-            stackable/non-stackable items, weight limits, world item drops with server-side 
-            pickup radius validation, and a fully reactive client UI.
+            stackable/non-stackable items, weight limits, items in world with server-side 
+            pickup radius validation, and a fully reactive client UI to display changes.
           </div>
           <div class="case-tags">
             <span class="tag">Lua</span>
@@ -658,14 +658,13 @@
         <div>
           <div class="case-meta">
             <span class="case-type">Environment · Systems</span>
-            <span class="case-date">2024 — Ongoing</span>
+            <span class="case-date">November 2025 — December 2025</span>
           </div>
-          <div class="case-title">Weather & Time-of-Day System — Dynamic World State</div>
+          <div class="case-title">Weather & Time-of-Day System: Dynamic World State</div>
           <div class="case-subtitle">
             A full weather cycle system with weighted random weather selection, precipitation 
-            particle effects, ambient audio, sky/atmosphere tweening, and per-player temperature 
-            lerping driven by time-of-day. Indoor detection disables rain particles via raycast. 
-            Snow changes terrain part colors via CollectionService tags.
+            particle effects, ambient audio, and sky/atmosphere tweening. Indoor detection disables rain particles via raycast. 
+            Snow changes terrain part colors via CollectionService tags & cacheing. All visuals are purely client sided.
           </div>
           <div class="case-tags">
             <span class="tag">Lua</span>
@@ -682,14 +681,14 @@
         <div>
           <div class="case-meta">
             <span class="case-type blue">Movement · Physics</span>
-            <span class="case-date">2024 — Ongoing</span>
+            <span class="case-date"> November 2025 </span>
           </div>
-          <div class="case-title">Movement System — Sprint, Dash, Double Jump & Sliding</div>
+          <div class="case-title">Movement System: Sprint, Dash, Double Jump & Sliding</div>
           <div class="case-subtitle">
-            Server-authoritative movement with sprint, directional dashing, double jump via 
-            LinearVelocity, and slope-aware sliding using AlignOrientation. Sliding speed 
-            multiplier responds to terrain incline — accelerating downhill and decelerating 
-            on flat ground. Input is tracked persistently to handle keyboard hardware ghosting.
+            Server authoritative movement with sprint, directional dashing, double jump, and sliding utilizing 
+            LinearVelocity and AlignOrientation. Sliding speed 
+            multiplier responds to terrain incline, accelerating downhill and decelerating 
+            on flat ground. Client only handles player input and animation playing (Animations were borrowed from toolbox)
           </div>
           <div class="case-tags">
             <span class="tag">Lua</span>
@@ -705,15 +704,15 @@
       <a href="/dialogue" class="case-card fade-in">
         <div>
           <div class="case-meta">
-            <span class="case-type">Dialogue · UI</span>
-            <span class="case-date">2024 — Ongoing</span>
+            <span class="case-type">Dialogue & UI</span>
+            <span class="case-date">November 2025</span>
           </div>
-          <div class="case-title">Dialogue System — Node-Based Branching NPC Conversations</div>
+          <div class="case-title">Dialogue System: Node-Based Branching NPC Conversations</div>
           <div class="case-subtitle">
             A reusable branching dialogue system driven by node graphs defined in module scripts. 
-            Any NPC can use it by swapping the dialogue module. Supports dynamic text injection 
+            Any NPC can use it by giving them a node driven dialogue model. Supports dynamic text injection 
             (player name, display name), scrollable response buttons, and clean server/client 
-            separation via a single RemoteEvent.
+            separation with a single RemoteEvent.
           </div>
           <div class="case-tags">
             <span class="tag">Lua</span>
@@ -729,12 +728,12 @@
       <a href="/stats" class="case-card fade-in">
         <div>
           <div class="case-meta">
-            <span class="case-type blue">RPG · Stats</span>
-            <span class="case-date">2024 — Ongoing</span>
+            <span class="case-type blue">RPG/Stats System</span>
+            <span class="case-date">July 2025 - September 2025</span>
           </div>
-          <div class="case-title">Stat & Progression System — Races, Levels & Skill Points</div>
+          <div class="case-title">Stat & Progression System: Races, Levels & Skill Points</div>
           <div class="case-subtitle">
-            A full RPG stat system with weighted race/variant rolling, procedurally generated 
+            A basic RPG stat system with weighted race/variant rolling, randomly generated 
             character names by gender, a nonlinear XP curve scaling across 100 levels, 
             and a handcrafted skill point reward table. Stats (Strength, Vitality, Agility, Arcane) 
             are capped and managed through a clean model/controller split.
@@ -765,7 +764,7 @@
       <div class="skill-card fade-in">
         <div class="skill-icon">⚙️</div>
         <div class="skill-name">Lua / Luau</div>
-        <div class="skill-desc">Primary language. OOP patterns, module architecture, server-client split, RemoteEvents, coroutines.</div>
+        <div class="skill-desc">Primary language. functional programming patterns, module architecture, server-client split.</div>
         <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
       </div>
       <div class="skill-card fade-in">
@@ -777,7 +776,7 @@
       <div class="skill-card fade-in">
         <div class="skill-icon">🎮</div>
         <div class="skill-name">Game Systems Architecture</div>
-        <div class="skill-desc">Server-authoritative design, state machines, anti-cheat, physics constraints, hitbox systems.</div>
+        <div class="skill-desc">Server authoritative design, state machines, anti cheat, physics constraints, hitbox systems.</div>
         <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
       </div>
       <div class="skill-card fade-in">
@@ -789,7 +788,7 @@
       <div class="skill-card fade-in">
         <div class="skill-icon">🖥️</div>
         <div class="skill-name">UI / UX Design</div>
-        <div class="skill-desc">Reactive inventory UIs, HUD systems, dialogue interfaces, hover states, scrolling frames.</div>
+        <div class="skill-desc">Reactive inventory UIs, HUD systems, dialogue interfaces.</div>
         <div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div>
       </div>
       <div class="skill-card fade-in">
@@ -813,21 +812,22 @@
       <div class="about-text fade-in">
         <p>
           I'm <strong>Adawari Dappa</strong>, a computer science student at UT Dallas 
-          (graduating Spring 2027) with a passion for building complex, well-architected game systems.
+          (graduating Spring 2027) with a passion for building and designing resuable & scalable game systems.
         </p>
         <p>
-          Most of my work lives in <strong>Lua/Luau inside Roblox Studio</strong> — not because it's 
-          simple, but because it's where I've had the most room to push serious systems: 
-          server-authoritative combat, persistent datastores with session locking, physics-driven 
-          movement, and dynamic world simulation.
+          Most of my work lives in <strong>Lua/Luau inside Roblox Studio</strong> because I grew up playing 
+          games on the platform, dreaming of one day making my own. I picked up the language at a young age 
+          and met many people who share the same passion as me along the way.
         </p>
         <p>
-          I care about <strong>the why behind decisions</strong> — why server-authoritative over 
-          client-driven, why session locks matter for datastores, why hitbox validation needs 
-          to happen server-side. Building right matters more to me than building fast.
+          I care about <strong>how to make code that will always be useful in the future</strong> 
+          : How do I make it so this system isn't exploitable, how can I structure a section of code 
+          to allow it to support modular architecture and combine multiple systems with just a few lines, 
+          how do I ensure correct syncing between the client and the server to ensure a player's experience 
+          is smooth. Building right matters more to me than building fast.
         </p>
         <p>
-          Outside of code I do <strong>3D modeling, UI/graphic design, digital art, 
+          Outside of code I do <strong>3D modeling, UI/graphic design, animation, VFX, digital art, 
           video editing</strong>, and basketball.
         </p>
       </div>

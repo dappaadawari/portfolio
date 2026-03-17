@@ -50,10 +50,11 @@
 <nav><a href="/" class="nav-logo">AD<span>.</span></a><a href="/" class="nav-back">← Back to Portfolio</a></nav>
 <div class="hero">
   <div class="case-type">Movement · Physics · Server-Authoritative</div>
-  <h1>Movement System — Sprint, Dash, Double Jump & Sliding</h1>
-  <p class="hero-desc">Server-authoritative movement with sprint, directional dashing, double jump via LinearVelocity, and slope-aware sliding using AlignOrientation. Input tracked persistently to handle keyboard hardware ghosting.</p>
+  <h1>Movement System: Sprint, Dash, Double Jump & Sliding</h1>
+  <p class="hero-desc">Server authoritative movement with sprint, directional dashing, double jump, and sliding utilizing 
+            LinearVelocity and AlignOrientation. Client plays animations and handles input.</p>
   <div class="meta-row">
-    <div><div class="meta-label">Timeline</div><div class="meta-value">2024 — Ongoing</div></div>
+    <div><div class="meta-label">Timeline</div><div class="meta-value">November 2025</div></div>
     <div><div class="meta-label">Language</div><div class="meta-value">Lua / Luau</div></div>
     <div><div class="meta-label">Platform</div><div class="meta-value">Roblox Studio</div></div>
     <div><div class="meta-label">Type</div><div class="meta-value">Personal Project</div></div>
@@ -67,14 +68,14 @@
 <div class="content">
   <div class="section">
     <div class="section-label">The Problem</div>
-    <h2>Movement that feels good and stays server-authoritative</h2>
-    <p>Roblox's default character controller is limited — no sprinting, no dashing, no sliding. The goal was a full movement suite where all speed modifications and physics forces are applied server-side, while animations and input remain on the client for responsiveness.</p>
-    <div class="callout"><strong>Key challenge:</strong> Using modern physics constraints (LinearVelocity, AlignOrientation) instead of deprecated BodyVelocity/BodyGyro, and making sliding feel physically realistic on slopes.</div>
+    <h2>Syncing server & client to make responsive movement.</h2>
+    <p>Roblox's default character controller is limited; no sprinting, no dashing, no sliding. The goal was a full movement system where all speed modifications and physics forces are applied server side, while animations and input remain on the client for responsiveness.</p>
+    <div class="callout"><strong>Key challenge:</strong> Making movement feel real and responsive.</div>
   </div>
   <div class="section">
     <div class="section-label">Dashing</div>
     <h2>Directional dashing with diagonal support</h2>
-    <p>The client reads held WASD keys persistently via InputBegan/InputEnded (not polling, to avoid hardware key ghosting where simultaneous keypresses drop signals). When Q is pressed, the held keys are sent to the server as a string like "WA" or "WD".</p>
+    <p>The client reads held WASD keys persistently via InputBegan/InputEnded. When Q is pressed, the held keys are sent to the server as a string like "WA" or "WD".</p>
     <p>The server computes the dash direction from the character's CFrame — each key in the combo contributes its axis, so diagonals work naturally. The direction string is validated (1–4 chars, only WASD) before any physics are applied. A <strong>LinearVelocity</strong> constraint is added to the HumanoidRootPart for the dash duration then destroyed.</p>
 <pre><code><span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"W"</span>) <span class="kw">then</span> direction += lookVector  <span class="kw">end</span>
 <span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"S"</span>) <span class="kw">then</span> direction -= lookVector  <span class="kw">end</span>
@@ -82,10 +83,10 @@
 <span class="kw">if</span> keys:<span class="fn">find</span>(<span class="st">"A"</span>) <span class="kw">then</span> direction -= rightVector <span class="kw">end</span></code></pre>
   </div>
   <div class="section">
-    <div class="section-label">Slope-Aware Sliding</div>
-    <h2>Physics-driven sliding that responds to terrain</h2>
-    <p>Sliding uses a <strong>LinearVelocity</strong> for forward momentum and an <strong>AlignOrientation</strong> to tilt the character to match the surface normal — so they lean into slopes visually. A raycast fires downward every Heartbeat; if no ground is detected the slide stops automatically.</p>
-    <p>A speed multiplier starts at 1.0 and changes based on vertical position delta each frame — accelerating downhill, decelerating on flat ground, decelerating faster going uphill. When the multiplier drops below 0.1 the slide ends naturally.</p>
+    <div class="section-label">Sliding</div>
+    <h2>Physics based sliding that responds to terrain</h2>
+    <p>Sliding uses a <strong>LinearVelocity</strong> for forward momentum and an <strong>AlignOrientation</strong> to tilt the character to match the surface normal so that they lean into slopes visually. A raycast fires downward every Heartbeat; if no ground is detected the slide stops automatically.</p>
+    <p>A speed multiplier starts at 1.0 and changes based on vertical position delta each frame, accelerating downhill, decelerating on flat ground, and decelerating faster going uphill. When the multiplier drops below 0.1 the slide ends naturally.</p>
 <pre><code><span class="kw">if</span> verticalChange < <span class="nm">0.1</span> <span class="kw">and</span> verticalChange > <span class="nm">-0.1</span> <span class="kw">then</span>
     currentMultiplier = <span class="fn">math.clamp</span>(
         currentMultiplier - slideSettings.SpeedChangeRate.Forward * dt,
@@ -98,10 +99,10 @@
   </div>
   <div class="section">
     <div class="section-label">Double Jump</div>
-    <h2>Mid-air jump using LinearVelocity</h2>
-    <p>Double jump fires a brief <strong>LinearVelocity</strong> along the Y axis for 0.12 seconds, then destroys itself. It's gated behind a <strong>FloorMaterial == Air</strong> check and a per-character cooldown attribute. Using LinearVelocity instead of manipulating AssemblyLinearVelocity directly gives a cleaner, more controllable impulse without fighting Roblox's physics solver.</p>
+    <h2>Mid air jump using LinearVelocity</h2>
+    <p>Double jump fires a brief <strong>LinearVelocity</strong> along the Y axis for 0.12 seconds, then destroys itself. It's gated behind a <strong>FloorMaterial == Air</strong> check and a per-character cooldown attribute.</p>
     <div class="tag-list">
-      <span class="tag">Lua</span><span class="tag">LinearVelocity</span><span class="tag">AlignOrientation</span><span class="tag">Raycasting</span><span class="tag">Physics Constraints</span><span class="tag">Server-Authoritative</span>
+      <span class="tag">Lua</span><span class="tag">LinearVelocity</span><span class="tag">AlignOrientation</span><span class="tag">Raycasting</span><span class="tag">Physics Constraints</span><span class="tag">Server Authoritative</span>
     </div>
   </div>
   <div class="next-cases">
